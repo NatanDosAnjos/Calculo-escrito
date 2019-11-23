@@ -25,7 +25,7 @@ int pilhavazia (void) {
    return t <= 0;
 }
 
-int bemFormada (char s[]) 
+int bemFormada (char s[], int &i) 
 {
 	int colOpen = 0;
 	int chavOpen = 0;
@@ -35,28 +35,40 @@ int bemFormada (char s[])
 	int parenClose = 0;
 	int chavClose = 0;
 	
-   criapilha ();
+	
+	criapilha ();
    
-   for (int i = 0; s[i] != '\0'; ++i) {
+   for (i = 0; s[i] != '\0'; ++i) {
       char c;
-      printf("%c",s[i]);
-      
     	switch (s[i]) {
       	
-      		/* Executa a verificação condicional de duplicidade de abertura de chaves.
+      		/* Executa a verificação condicional de duplicidade de abertura de CHAVES.
       		 * Caso as chaves não tenham sido abertas anteriormente a variável de controle recebe valor 1 "verdadeiro".
       		 */
       		case '{':				
       			chavOpen = 1;		
       		break;
       		
+      		/* Executa a verificação condicional de duplicidade de abertura de COLCHETES.
+      		 * Caso as chaves não tenham sido abertas anteriormente a variável de controle recebe valor 1 "verdadeiro".
+      		 */
     		case '[': 
-				colOpen = 1;
+    			if(colOpen == 1){
+					erro("Você já abriu os colchetes, use os parenteses agora '['.");
+					return 1;
+				}
+				else
+				{
+					colOpen = 1;
+				}
         	break;
                    
+            /* Executa a verificação condicional de duplicidade de abertura de PARENTESES.
+      		 * Caso as chaves não tenham sido abertas anteriormente a variável de controle recebe valor 1 "verdadeiro".
+      		 */
         	case '(':
         		if(parenOpen == 1){
-					printf("\n\nVocê já abriu os parenteses, use os colchetes '[' agora\n ");
+					erro("Você já abriu um parenteses, feche-o.");
 					return 1;
 				}
 				else
@@ -67,8 +79,12 @@ int bemFormada (char s[])
         	
 		 	case ')':
 		 		if (parenOpen == 0){
-		 			printf("\n Você não abriu os parenteses");
+		 			erro("Você está tentando fechar um parentese que não foi aberto.");
 		 			return 1;
+				}
+				else if ((parenOpen == 1)&&(parenClose == 1)){
+					erro("Você já abriu e fechou os parentese. Use um colchete no local.");
+					return 1;
 				}
 				else
 				{
@@ -78,28 +94,48 @@ int bemFormada (char s[])
 			
 			case ']':
 				if ((parenOpen == 1)&&(parenClose == 0)){
-					printf("\n\nFeche os parenteses ')' antes de fechar os colchetes.\n ");
+					erro("Feche os parenteses ')' antes de fechar os colchetes.");
+					return 1;
 				}
-				else if(colOpen == 1){
-					printf("\n Você não abriu os colchetes");
+				else if(colOpen == 0){
+					erro("Você não abriu os colchetes.");
+					return 1;
 				}
 				else{
 					colClose = 1;
 				}
-			   
-        empilha (s[i]);
-        	
+			break;
+        empilha (s[i]);	
     	}
-      	
-      	
    }
    return pilhavazia ();
 }
 
-// faltam coisas
+// Função Principal do programa.
 int main (void) {
+	int retorno, cont, i;
+	char s[] = "(A+[]D*J)";
+	
 	setlocale(LC_ALL,"PORTUGUESE");
-   int retorno = bemFormada("[((A+D*J)]");
+	retorno = bemFormada(s, i);
+
+	printf("\n\n\n-------------------------------------------------------------------------------\n");
+	printf("Equação         |<>| %s\n",s);
+	printf("Local do Erro   |<>| ");
+	
+	
+	if (retorno == 1){
+		for(cont = 0; s[cont] != '\0'; cont++){
+			if (cont != i){
+				printf("%c", s[cont]);
+			}
+			else{
+				textcolor(1);
+				printf("%c", s[cont]);
+				textcolor(0);
+			}
+		}
+	}
 }
 
 
