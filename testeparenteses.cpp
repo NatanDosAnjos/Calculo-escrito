@@ -1,5 +1,4 @@
-#include<stdio.h>
-#include <stdlib.h>
+#include "header_functions.h"
 
 #define N 100
 char pilha[N];
@@ -28,13 +27,13 @@ int pilhavazia (void) {
 
 int bemFormada (char s[]) 
 {
-	int col = 0;
-	int chav = 0;
-	int paren = 0;
+	int colOpen = 0;
+	int chavOpen = 0;
+	int parenOpen = 0;
 	
-	int colFechado = 0;
-	int parenFechado = 0;
-	int chavFechado = 0;
+	int colClose = 0;
+	int parenClose = 0;
+	int chavClose = 0;
 	
    criapilha ();
    
@@ -42,31 +41,55 @@ int bemFormada (char s[])
       char c;
       printf("%c",s[i]);
       
-      switch (s[i]) {
-    		case '(': 
-				paren = 1;
+    	switch (s[i]) {
+      	
+      		/* Executa a verificação condicional de duplicidade de abertura de chaves.
+      		 * Caso as chaves não tenham sido abertas anteriormente a variável de controle recebe valor 1 "verdadeiro".
+      		 */
+      		case '{':				
+      			chavOpen = 1;		
+      		break;
+      		
+    		case '[': 
+				colOpen = 1;
         	break;
                    
-        	case '[':
-        		col = 1;
+        	case '(':
+        		if(parenOpen == 1){
+					printf("\n\nVocê já abriu os parenteses, use os colchetes '[' agora\n ");
+					return 1;
+				}
+				else
+				{
+					parenOpen = 1;
+				}
         	break;
         	
 		 	case ')':
-		 		if (paren == 0){
+		 		if (parenOpen == 0){
 		 			printf("\n Você não abriu os parenteses");
-				 }
+		 			return 1;
+				}
+				else
+				{
+					parenClose = 1;	
+				}
 			break;
 			
 			case ']':
-				if((col == 0)||(col == 1) && (parenFechado == 0)){
+				if ((parenOpen == 1)&&(parenClose == 0)){
+					printf("\n\nFeche os parenteses ')' antes de fechar os colchetes.\n ");
+				}
+				else if(colOpen == 1){
 					printf("\n Você não abriu os colchetes");
 				}
+				else{
+					colClose = 1;
+				}
 			   
-		 		      
-			//if (chaveFechado)
-			     
-        	empilha (s[i]);
-      	}
+        empilha (s[i]);
+        	
+    	}
       	
       	
    }
@@ -75,8 +98,8 @@ int bemFormada (char s[])
 
 // faltam coisas
 int main (void) {
-   int retorno = bemFormada("}[(A+D*J]");
-   printf ("%i", retorno);
+	setlocale(LC_ALL,"PORTUGUESE");
+   int retorno = bemFormada("[((A+D*J)]");
 }
 
 
